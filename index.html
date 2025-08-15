@@ -234,22 +234,165 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // 👉 Bọc toàn bộ script trong IIFE để **không tạo biến toàn cục** (fix lỗi trùng LS_TK, LS_EP khi chạy lại)
-    (function(){
-      'use strict';
-      // Helpers (không để global)
-      const qs=(q,root=document)=>root.querySelector(q);
-      const qsa=(q,root=document)=>Array.from(root.querySelectorAll(q));
-      const toast=(m)=>{const t=qs('#toast'); if(!t) return; t.textContent=m; t.style.display='block'; setTimeout(()=>t.style.display='none', 3200)};
+  // 👉 Bọc toàn bộ script trong IIFE để không rò rỉ biến global
+  (function(){
+    'use strict';
+    // Helpers
+    const qs=(q,root=document)=>root.querySelector(q);
+    const qsa=(q,root=document)=>Array.from(root.querySelectorAll(q));
+    const toast=(m)=>{const t=qs('#toast'); if(!t) return; t.textContent=m; t.style.display='block'; setTimeout(()=>t.style.display='none', 3200)};
 
-      // Toggle config ribbon (gắn 1 lần duy nhất)
-      const cfgBtn = qs('#toggleConfig');
-      const cfgPanel = qs('#configPanel');
-      if (cfgBtn && cfgPanel && !cfgBtn.dataset.bound) {
-        cfgBtn.addEventListener('click', ()=> cfgPanel.classList.toggle('open'), { once:false });
-        cfgBtn.dataset.bound = '1';
-      }
+    // Toggle config ribbon (admin mới thấy)
+    const cfgBtn = qs('#toggleConfig');
+    const cfgPanel = qs('#configPanel');
+    if (cfgBtn && cfgPanel && !cfgBtn.dataset.bound) {
+      cfgBtn.addEventListener('click', ()=> cfgPanel.classList.toggle('open'), { once:false });
+      cfgBtn.dataset.bound = '1';
+    }
 
-      // LocalStorage keys (đặt trong scope cục bộ để không đụng nhau giữa lần chạy)
-      const KEYS = { EP:'apsp-endpoint', TK:'apsp-token' };
-      const DEFAULT_EP = 'https://script.google.com/macros/s/AKfycbyjxScUymAQzWf7xVLNco2M98ekutI42XDCKdRa-TjKuIMc0f4hYqRFDWsCDSJACNzJrQ/exec'; // hardcoded endpoint for students
+    // Khóa lưu trữ
+    const KEYS = { EP:'apsp-endpoint', TK:'apsp-token' };
+
+    // 🚀 Endpoint cố định (hardcode) theo yêu cầu
+    const DEFAULT_EP = 'https://script.google.com/macros/s/AKfycbxWzoNVe2oMvuE9VdZZpmbHuQ1TTR5SDpICDtJIsnQ8tR1yWWquZ7NyTowCxcZVIrLRiA/exec';
+
+    // Tham số URL & chế độ admin
+    const params = new URLSearchParams(location.search);
+    const urlEP  = (params.get('ep')||'').trim();
+    const isAdmin = params.has('admin');
+
+    // Ẩn cấu hình với học viên
+    if (!isAdmin) { qs('#toggleConfig')?.remove(); qs('#configPanel')?.remove(); }
+
+    // Các phần tử điều khiển cấu hình (admin dùng)
+    const epInput = qs('#ep');
+    const tkInput = qs('#tok');
+    const saveBtn = qs('#saveCfg');
+    const openBtn = qs('#openEP');
+
+    // Nếu admin thì hiển thị giá trị đang dùng cho dễ kiểm tra
+    if (isAdmin) {
+      if (epInput) epInput.value = urlEP || localStorage.getItem(KEYS.EP) || DEFAULT_EP || '';
+      if (tkInput) tkInput.value = localStorage.getItem(KEYS.TK) || '';
+    }
+
+    if (saveBtn && !saveBtn.dataset.bound) {
+      saveBtn.addEventListener('click', ()=>{
+        if (isAdmin) {
+          localStorage.setItem(KEYS.EP, (epInput?.value||'').trim());
+          localStorage.setItem(KEYS.TK, (tkInput?.value||'').trim());
+          toast('Đã lưu cấu hình endpoint (localStorage – chỉ máy này).');
+        } else {
+          toast('Chế độ học viên: cấu hình đã bị ẩn.');
+        }
+      });
+      saveBtn.dataset.bound='1';
+    }
+
+    if (openBtn && !openBtn.dataset.bound) {
+      openBtn.addEventListener('click', ()=>{
+        const u=(epInput?.value||'').trim();
+        if(u) window.open(u,'_blank'); else toast('Chưa có Web App URL.');
+      });
+      openBtn.dataset.bound='1';
+    }
+
+    // Logo fallback (nếu bạn đã bật chọn logo ở bản trước thì vẫn hoạt động)
+    const logoImg = qs('#brandLogo');
+    const logoFallback = qs('#brandFallback');
+    if (logoImg && !logoImg.dataset.bound) {
+      logoImg.addEventListener('error', ()=>{ if(logoFallback) logoFallback.style.display='inline-block'; logoImg.style.display='none'; });
+      logoImg.addEventListener('load', ()=>{ if(logoImg.naturalWidth>0){ logoImg.style.display='block'; if(logoFallback) logoFallback.style.display='none'; } });
+      if(!logoImg.getAttribute('src')){ if(logoFallback) logoFallback.style.display='inline-block'; logoImg.style.display='none'; }
+      logoImg.dataset.bound='1';
+    }
+
+    // Word-count meter
+    const analysis=qs('#analysis'), wc=qs('#wc'), pb=qs('#pb');
+    const upd=()=>{ const n=(analysis?.value.trim().match(/\b\w+\b/gu)||[]).length; if(wc) wc.textContent=n; if(pb) pb.style.width=Math.max(6,Math.min(100,Math.round((n/250)*100)))+'%'; };
+    if (analysis && !analysis.dataset.bound) { analysis.addEventListener('input', upd); analysis.dataset.bound='1'; }
+    upd();
+
+    // Lưu nháp
+    const SK='apsp-scenario-XL-GIAO-HANG-v1';
+    const saveDraftBtn = qs('#save');
+    if (saveDraftBtn && !saveDraftBtn.dataset.bound){
+      saveDraftBtn.addEventListener('click', ()=>{ const d=collect(); localStorage.setItem(SK, JSON.stringify(d)); toast('Đã lưu nháp.'); });
+      saveDraftBtn.dataset.bound='1';
+    }
+    (function loadDraft(){ try{ const s=localStorage.getItem(SK); if(!s) return; const d=JSON.parse(s);
+      const fn=qs('#fullName'); if(fn) fn.value=d.fullName||'';
+      const em=qs('#email'); if(em) em.value=d.email||'';
+      const dp=qs('#dept'); if(dp) dp.value=d.dept||'';
+      const r=qsa('input[name=option]').find(x=>x.value===d.option); if(r) r.checked=true;
+      if(analysis){ analysis.value=d.analysis||''; upd(); } }catch(e){} })();
+
+    // Reset form
+    const resetBtn = qs('#resetBtn');
+    if (resetBtn && !resetBtn.dataset.bound){
+      resetBtn.addEventListener('click', ()=>{ const form=qs('#f'); form?.reset(); upd(); const st=qs('#st'); if(st) st.textContent='Chưa gửi'; });
+      resetBtn.dataset.bound='1';
+    }
+
+    // Gom dữ liệu gửi
+    function collect(){
+      const opt=(qsa('input[name=option]').find(x=>x.checked)||{}).value||'';
+      return {
+        scenario_id: qs('#scenarioId')?.value,
+        fullName: qs('#fullName')?.value.trim(),
+        email: qs('#email')?.value.trim(),
+        dept: qs('#dept')?.value,
+        option: opt,
+        analysis: analysis?.value.trim(),
+        client_id: (localStorage.getItem('apsp-client-id')|| (window.crypto?.randomUUID?.()||String(Date.now()))),
+        app_token: (isAdmin ? (tkInput?.value||'') : ''), // token chỉ dùng khi admin cấu hình
+        user_agent: navigator.userAgent,
+        page: location.href
+      };
+    }
+
+    // Submit
+    const form = qs('#f');
+    if (form && !form.dataset.bound){
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+
+        // 🔒 Ưu tiên: học viên luôn dùng DEFAULT_EP; admin có thể override
+        const endpointRaw = (isAdmin ? (urlEP || localStorage.getItem(KEYS.EP) || epInput?.value || DEFAULT_EP)
+                                     : DEFAULT_EP);
+        const endpoint = String(endpointRaw||'').trim();
+
+        if(!endpoint){ toast('Thiếu endpoint. (Liên hệ quản trị)'); return; }
+
+        const d=collect();
+        if(!d.fullName || !d.option || !d.analysis){
+          toast('Vui lòng nhập Họ & tên, chọn phương án và viết lý do.'); return;
+        }
+
+        try{
+          // Gửi kiểu form-urlencoded để Apps Script nhận ở e.parameter
+          const body=new URLSearchParams(); Object.entries(d).forEach(([k,v])=> body.append(k, v ?? ''));
+          // Log endpoint cho admin debug (F12)
+          if (isAdmin) console.log('[APSP submit → endpoint]', endpoint);
+          await fetch(endpoint,{ method:'POST', mode:'no-cors', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body });
+
+          toast('Đã gửi! (Trình duyệt có thể không hiển thị phản hồi do CORS, nhưng dữ liệu đã đi.)');
+          const st=qs('#st'); if(st) st.textContent='Đã gửi';
+          localStorage.removeItem(SK); form.reset(); upd();
+        }catch(err){
+          console.error(err); toast('Gửi lỗi: '+err);
+          const st=qs('#st'); if(st) st.textContent='Lỗi gửi';
+        }
+      });
+      form.dataset.bound='1';
+    }
+
+    // Mini test log
+    (function runTests(){
+      const results=[];
+      results.push(document.querySelector('#toggleConfig') ? 'ADMIN: config visible' : 'STUDENT: config hidden');
+      results.push(qsa('input[name=option]').length===3 ? 'PASS: 3 options' : 'WARN: options!=3');
+      console.log('[APSP Live Tests]', results.join(' | '));
+    })();
+  })();
+</script>
