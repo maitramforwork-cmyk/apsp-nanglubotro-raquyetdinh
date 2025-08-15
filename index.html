@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trung tâm Học tập APSP • Ứng dụng tình huống: Năng lực Bổ trợ - Ra quyết định</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --ink:#0b1220; --muted:#5b6b7c; --line:#e6eef0;
+      --g1:#22d3ee; --g2:#32bebb; --g3:#3bd2f0; --g4:#7dd3fc;
+      --card:#ffffff; --glass:rgba(255,255,255,.55);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0; font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink);
+      background: radial-gradient(1200px 800px at -10% -10%, #f0fbff 0%, #ffffff 40%, #f7fbff 100%),
+                  linear-gradient(160deg,#eefbff 0%, #ffffff 50%, #f4fffd 100%);
+    }
+    /* HEADER & NAV */
+    .nav{
+      position:sticky; top:0; z-index:50;
+      background:linear-gradient(120deg, rgba(34,211,238,.85), rgba(50,190,187,.85));
+      backdrop-filter:saturate(140%) blur(8px);
+      color:#05333a; border-bottom:1px solid rgba(255,255,255,.4);
+    }
+    .wrap{max-width:1180px; margin:0 auto; padding:0 20px}
+    .nav-row{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 0}
+    .brand{display:flex; align-items:center; gap:12px}
+    .brand-logo{height:40px;width:auto;object-fit:contain;display:block;border-radius:10px;background:rgba(255,255,255,.85);padding:2px;box-shadow:0 8px 22px rgba(50,190,187,.35)}
+    .brand-title{font-weight:800; letter-spacing:.2px; text-transform:uppercase; color:#fff}
+    .nav-links{display:flex; gap:18px; align-items:center; flex-wrap:wrap}
+    .nav-links a{color:#063a41; text-decoration:none; font-weight:700; opacity:.9}
+    .btn-cta{appearance:none; border:0; border-radius:999px; padding:10px 16px; font-weight:800; cursor:pointer; color:#03343b;
+      background:linear-gradient(90deg,var(--g2),var(--g3)); box-shadow:0 8px 18px rgba(50,190,187,.35)}
+
+    /* CONFIG RIBBON */
+    .config{display:none}
+    .config.open{display:block}
+    .config .panel{margin:10px auto 0; display:flex; gap:10px; flex-wrap:wrap; align-items:center; padding:10px; border-radius:14px;
+      background:var(--glass); border:1px solid rgba(255,255,255,.6); backdrop-filter: blur(8px)}
+    .config input{flex:1; min-width:240px; padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,.08); outline:none}
+    .config button{background:#eefbf9; border:1px solid #c6edea; color:#063a41; padding:10px 12px; border-radius:10px; font-weight:700; cursor:pointer}
+
+    /* HERO */
+    .hero{padding:36px 0 18px}
+    .hero-card{position:relative; overflow:hidden; border-radius:26px; background:linear-gradient(120deg, rgba(34,211,238,.15), rgba(50,190,187,.15));
+      border:1px solid #e7f4f6; box-shadow:0 28px 60px rgba(13,110,139,.10)}
+    .hero-inner{display:grid; grid-template-columns:1.1fr .9fr; gap:20px; padding:30px}
+    @media (max-width: 980px){ .hero-inner{grid-template-columns:1fr; padding:22px} }
+    .h1{font-size:38px; line-height:1.12; margin:6px 0 10px; font-weight:800; background:linear-gradient(90deg,var(--g1),var(--g2),var(--g3)); -webkit-background-clip:text; color:transparent}
+    .lead{color:#3d5360; font-size:16px}
+    .cta{display:flex; gap:10px; align-items:center; margin-top:12px}
+    .btn-lg{appearance:none; border:0; border-radius:14px; padding:14px 18px; font-weight:800; cursor:pointer; color:#ffffff; text-decoration:none; display:inline-block; background:linear-gradient(90deg,var(--g2),var(--g3)); box-shadow:0 10px 24px rgba(50,190,187,.35)}
+    .btn-ghost{appearance:none; border:1px solid rgba(3,52,59,.15); background:rgba(255,255,255,.75); backdrop-filter: blur(6px); color:#063a41; border-radius:14px; padding:12px 16px; font-weight:800; text-decoration:none; display:inline-block}
+
+    /* SECTIONS */
+    .section{padding:18px 0 34px}
+    .section h2{font-size:24px; margin:0 0 12px; background:linear-gradient(90deg,var(--g2),var(--g1)); -webkit-background-clip:text; color:transparent}
+
+    /* CARDS */
+    .card{background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:0 16px 40px rgba(13,110,139,.08); overflow:hidden}
+    .pad{padding:18px 20px}
+
+    /* SCENARIO CHOICES */
+    .choices{display:grid; grid-template-columns:repeat(3, 1fr); gap:12px}
+    @media (max-width:900px){ .choices{grid-template-columns:1fr} }
+    .choice{display:flex; gap:12px; border:1px solid #e6eef0; padding:14px; border-radius:16px; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease}
+    .choice:hover{transform:translateY(-2px); box-shadow:0 14px 28px rgba(50,190,187,.16)}
+    .choice input{accent-color:#0ea5a4; transform:scale(1.2)}
+    .procon{margin:.35rem 0 0 18px; color:#394b59; font-size:13px}
+    .procon li{margin:.2rem 0}
+
+    /* FORM */
+    form{display:grid; gap:14px}
+    .row{display:grid; gap:12px; grid-template-columns:1fr 1fr}
+    @media (max-width:700px){ .row{grid-template-columns:1fr} }
+    .field{display:grid; gap:6px}
+    .field label{font-weight:700; font-size:14px}
+    input[type="text"], input[type="email"], select, textarea{width:100%; border:1px solid var(--line); border-radius:12px; padding:12px 14px; font:inherit; background:#fff; outline:none; transition:.2s border, .2s box-shadow}
+    textarea{min-height:140px; resize:vertical}
+    input:focus, select:focus, textarea:focus{border-color:#8ee3df; box-shadow:0 0 0 4px rgba(50,190,187,.18)}
+    .meter{display:flex; gap:8px; align-items:center}
+    .meter .bar{flex:1; height:8px; background:#e9f7f6; border:1px solid #d7efed; border-radius:999px; overflow:hidden}
+    .meter .bar>b{display:block; width:0%; height:100%; background:linear-gradient(90deg,var(--g2),var(--g3))}
+    .actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .tag{display:inline-block; background:rgba(2,60,91,.08); color:#063a41; padding:4px 8px; border-radius:999px; font-weight:800; font-size:12px}
+    .muted{color:var(--muted); font-size:13px}
+
+    .toast{position:fixed; bottom:16px; right:16px; background:linear-gradient(120deg,#03343b,#09515e); color:#e6fffb; padding:12px 14px; border-radius:12px; box-shadow:0 12px 22px rgba(2,60,91,.24); display:none; z-index:80}
+    :focus-visible{outline:3px solid #7dd3fc; outline-offset:2px}
+  .brand-fallback{height:40px;width:40px;border-radius:10px;background:conic-gradient(from 140deg,var(--g2),var(--g4),var(--g2));box-shadow:0 8px 22px rgba(50,190,187,.35);display:none}
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="wrap nav-row">
+      <div class="brand">
+        <img class="brand-logo" id="brandLogo" src="LogoSP-new2024-FINAL (1.1)_Bo2LogoAPSP-2024.png" alt="APSP & SP logo" />
+        <div class="brand-fallback" id="brandFallback" aria-hidden="true"></div>
+        <div class="brand-title">Trung tâm Học tập APSP</div>
+      </div>
+      <div class="nav-links">
+        <a href="#scenario">Tình huống</a>
+        <a href="#answer">Nộp bài</a>
+        <button class="btn-cta" id="toggleConfig">⚙︎ Cấu hình</button>
+      </div>
+    </div>
+    <div class="wrap config" id="configPanel">
+      <div class="panel">
+        <input id="ep" placeholder="Dán Web App URL (https://script.google.com/macros/s/…/exec)">
+        <input id="tok" placeholder="appToken (tuỳ chọn)">
+        <button id="saveCfg">Lưu cấu hình</button>
+        <button id="openEP">Mở URL</button>
+        <input id="logoFile" type="file" accept="image/*" style="display:none">
+        <button id="pickLogo">Chọn logo</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO CARD -->
+  <header class="hero wrap">
+    <div class="hero-card">
+      <div class="hero-inner">
+        <div>
+          <div class="h1">Ứng dụng tình huống: Năng lực Bổ trợ - Ra quyết định</div>
+          <p class="lead">Đọc bối cảnh thực tế, chọn phương án phù hợp, trình bày lập luận và gửi ngay – dữ liệu đồng bộ về trung tâm đào tạo.</p>
+          <div class="cta">
+            <a class="btn-lg" href="#choices">Bắt đầu ngay</a>
+            <a class="btn-ghost" href="#scenario">Xem bối cảnh</a>
+          </div>
+        </div>
+        <div class="card pad" id="scenario">
+          <div class="badge">Bối cảnh</div>
+          <ul class="list" style="margin-top:6px">
+            <li>Công ty bạn chuyên sản xuất và phân phối dầu nhờn cho các đại lý và nhà máy.</li>
+            <li>Một khách hàng chiến lược vừa <b>đặt đơn hàng gấp 200.000 lít</b> dầu nhờn động cơ để phục vụ dây chuyền sản xuất.</li>
+            <li>Kho vận đã sử dụng lô hàng <b>tồn kho</b> mà không kiểm tra hạn sử dụng. Gần hạn giao hàng mới phát hiện toàn bộ lô chỉ còn <b>2 tháng</b>, trong khi hợp đồng yêu cầu tối thiểu <b>6 tháng</b>.</li>
+            <li><b>Yêu cầu quyết định:</b> Bạn là Giám đốc Nhà máy phải lựa chọn phương án xử lý ngay trong sáng hôm nay.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SCENARIO CHOICES + FORM -->
+  <main class="wrap section">
+    <h2 id="choices">Chọn phương án</h2>
+    <div class="choices" aria-label="Phương án">
+      <label class="choice">
+        <input type="radio" name="option" value="Dừng đơn & hoàn tiền">
+        <div>
+          <div class="name">1) Dừng đơn hàng & hoàn tiền cho khách</div>
+          <ul class="procon">
+            <li><b>Lợi:</b> Tránh giao hàng không đạt yêu cầu, bảo vệ uy tín.</li>
+            <li><b>Hại:</b> Mất doanh thu đơn hàng, nguy cơ mất khách lâu dài.</li>
+          </ul>
+        </div>
+      </label>
+      <label class="choice">
+        <input type="radio" name="option" value="Chế lại lô cận date">
+        <div>
+          <div class="name">2) Chế lại lô sản phẩm cận date</div>
+          <ul class="procon">
+            <li><b>Lợi:</b> Giảm chi phí/nguyên liệu, rút ngắn thời gian so với sản xuất mới.</li>
+            <li><b>Hại:</b> Giao trễ; rủi ro về chất lượng hoặc pháp lý nếu khách kiểm tra kỹ.</li>
+          </ul>
+        </div>
+      </label>
+      <label class="choice">
+        <input type="radio" name="option" value="Sản xuất lô mới">
+        <div>
+          <div class="name">3) Sản xuất lô mới đạt yêu cầu</div>
+          <ul class="procon">
+            <li><b>Lợi:</b> Đáp ứng đúng yêu cầu hợp đồng và tiêu chuẩn chất lượng.</li>
+            <li><b>Hại:</b> Giao trễ; phát sinh chi phí sản xuất bổ sung.</li>
+          </ul>
+        </div>
+      </label>
+    </div>
+
+    <section class="card pad" id="answer" style="margin-top:18px">
+      <h2>Nộp câu trả lời</h2>
+      <p class="sub">Câu trả lời sẽ được gửi về Google Sheets qua Apps Script.</p>
+      <form id="f">
+        <div class="row">
+          <div class="field"><label for="fullName">Họ và tên <span style="color:#e11d48">*</span></label><input id="fullName" required placeholder="VD: Nguyễn Văn A"></div>
+          <div class="field"><label for="email">Email công việc</label><input id="email" type="email" placeholder="ten@congty.com"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="dept">Bộ phận</label>
+            <select id="dept"><option value="">Chọn bộ phận</option>
+              <option>BỘ PHẬN CUNG ỨNG</option>
+              <option>PHÒNG KẾ TOÁN</option>
+              <option>PHÒNG R &amp; D, QC</option>
+              <option>PHÒNG NHÂN SỰ</option>
+              <option>BỘ PHẬN KỸ THUẬT BẢO TRÌ</option>
+              <option>BỘ PHẬN CÔNG NGHỆ SẢN XUẤT</option>
+              <option>CHI NHÁNH MIỀN BẮC</option>
+              <option>BỘ PHẬN KHO VẬN</option>
+              <option>PHÒNG DỊCH VỤ CHĂM SÓC KHÁCH HÀNG</option>
+              <option>BỘ PHẬN PTTT</option>
+              <option>PHÒNG XUẤT KHẨU</option>
+              <option>PHÒNG QUẢN LÝ KÊNH PHÂN PHỐI (GT)</option>
+              <option>BỘ PHẬN AN TOÀN &amp; MÔI TRƯỜNG</option>
+              <option>PHÒNG MARKETING</option>
+              <option>BỘ PHẬN HÀNG HẢI</option>
+              <option>TỔNG GIÁO ĐỐC</option>
+              <option>GIÁM ĐỐC NHÀ MÁY</option>
+            </select>
+          </div>
+          <div class="field"><label for="scenarioId">Mã tình huống</label><input id="scenarioId" value="XL-GIAO-HANG-KHACH-LON-v1" readonly></div>
+        </div>
+        <div class="field">
+          <label for="analysis">Lý do & cách triển khai (100–250 từ) <span style="color:#e11d48">*</span></label>
+          <textarea id="analysis" required placeholder="Trình bày lập luận của bạn…"></textarea>
+          <div class="meter"><small class="muted">Mục tiêu 100–250 từ</small><div class="bar"><b id="pb"></b></div><small class="muted"><span id="wc">0</span> từ</small></div>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn-ghost" id="save">Lưu nháp</button>
+          <button class="btn-lg" id="submitBtn">Gửi câu trả lời</button>
+          <button type="button" class="btn-ghost" id="resetBtn">Xoá biểu mẫu</button>
+          <span class="tag" id="st">Chưa gửi</span>
+        </div>
+</form>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // 👉 Bọc toàn bộ script trong IIFE để **không tạo biến toàn cục** (fix lỗi trùng LS_TK, LS_EP khi chạy lại)
+    (function(){
+      'use strict';
+      // Helpers (không để global)
+      const qs=(q,root=document)=>root.querySelector(q);
+      const qsa=(q,root=document)=>Array.from(root.querySelectorAll(q));
+      const toast=(m)=>{const t=qs('#toast'); if(!t) return; t.textContent=m; t.style.display='block'; setTimeout(()=>t.style.display='none', 3200)};
+
+      // Toggle config ribbon (gắn 1 lần duy nhất)
+      const cfgBtn = qs('#toggleConfig');
+      const cfgPanel = qs('#configPanel');
+      if (cfgBtn && cfgPanel && !cfgBtn.dataset.bound) {
+        cfgBtn.addEventListener('click', ()=> cfgPanel.classList.toggle('open'), { once:false });
+        cfgBtn.dataset.bound = '1';
+      }
+
+      // LocalStorage keys (đặt trong scope cục bộ để không đụng nhau giữa lần chạy)
+      const KEYS = { EP:'apsp-endpoint', TK:'apsp-token' };
+
+      // Config bar bindings (đảm bảo không bind lặp lại)
+      const epInput = qs('#ep');
+      const tkInput = qs('#tok');
+      const saveBtn = qs('#saveCfg');
+      const openBtn = qs('#openEP');
+      const pickLogoBtn = qs('#pickLogo');
+      const logoFile = qs('#logoFile');
+      const logoImg = qs('#brandLogo');
+      const logoFallback = qs('#brandFallback');
+
+      if (epInput) epInput.value = localStorage.getItem(KEYS.EP) || '';
+      if (tkInput) tkInput.value = localStorage.getItem(KEYS.TK) || '';
+      // Load logo from localStorage if available
+      const cachedLogo = localStorage.getItem('apsp-logo-datauri');
+      if (cachedLogo && logoImg) logoImg.src = cachedLogo;
+
+      if (saveBtn && !saveBtn.dataset.bound) {
+        saveBtn.addEventListener('click', ()=>{
+          localStorage.setItem(KEYS.EP, (epInput?.value||'').trim());
+          localStorage.setItem(KEYS.TK, (tkInput?.value||'').trim());
+          toast('Đã lưu cấu hình endpoint.');
+        });
+        saveBtn.dataset.bound='1';
+      }
+      if (openBtn && !openBtn.dataset.bound) {
+        openBtn.addEventListener('click', ()=>{
+          const u=(epInput?.value||'').trim(); if(u) window.open(u,'_blank'); else toast('Chưa có Web App URL.');
+        });
+        openBtn.dataset.bound='1';
+      }
+      // Pick logo (choose file -> save to localStorage -> apply)
+      if (pickLogoBtn && !pickLogoBtn.dataset.bound) {
+        pickLogoBtn.addEventListener('click', ()=> logoFile && logoFile.click());
+        pickLogoBtn.dataset.bound='1';
+      }
+      if (logoFile && !logoFile.dataset.bound) {
+        logoFile.addEventListener('change', async (e)=>{
+          const f=e.target.files?.[0]; if(!f) return;
+          const reader=new FileReader();
+          reader.onload=()=>{ const uri=String(reader.result); localStorage.setItem('apsp-logo-datauri', uri); if(logoImg) logoImg.src = uri; toast('Đã cập nhật logo.'); };
+          reader.readAsDataURL(f);
+        });
+        logoFile.dataset.bound='1';
+      }
+      // Logo show/hide fallback depending on load/error
+      if (logoImg && !logoImg.dataset.bound) {
+        logoImg.addEventListener('error', ()=>{ if(logoFallback) logoFallback.style.display='inline-block'; logoImg.style.display='none'; });
+        logoImg.addEventListener('load', ()=>{ if(logoImg.naturalWidth>0){ logoImg.style.display='block'; if(logoFallback) logoFallback.style.display='none'; } });
+        if(!logoImg.getAttribute('src')){ if(logoFallback) logoFallback.style.display='inline-block'; logoImg.style.display='none'; }
+        logoImg.dataset.bound='1';
+      }
+
+      // Word counter
+      const analysis=qs('#analysis'), wc=qs('#wc'), pb=qs('#pb');
+      const upd=()=>{ const n=(analysis?.value.trim().match(/\b\w+\b/gu)||[]).length; if(wc) wc.textContent=n; if(pb) pb.style.width=Math.max(6,Math.min(100,Math.round((n/250)*100)))+'%'; };
+      if (analysis && !analysis.dataset.bound) { analysis.addEventListener('input', upd); analysis.dataset.bound='1'; }
+      upd();
+
+      // Save/Load draft (guard chống bind lại)
+      const SK='apsp-scenario-XL-GIAO-HANG-v1';
+      const saveDraftBtn = qs('#save');
+      if (saveDraftBtn && !saveDraftBtn.dataset.bound){
+        saveDraftBtn.addEventListener('click', ()=>{ const d=collect(); localStorage.setItem(SK, JSON.stringify(d)); toast('Đã lưu nháp.'); });
+        saveDraftBtn.dataset.bound='1';
+      }
+      (function load(){ try{ const s=localStorage.getItem(SK); if(!s) return; const d=JSON.parse(s); const fn=qs('#fullName'); if(fn) fn.value=d.fullName||''; const em=qs('#email'); if(em) em.value=d.email||''; const dp=qs('#dept'); if(dp) dp.value=d.dept||''; const r=qsa('input[name=option]').find(x=>x.value===d.option); if(r) r.checked=true; if(analysis){ analysis.value=d.analysis||''; upd(); } }catch(e){} })();
+
+      const resetBtn = qs('#resetBtn');
+      if (resetBtn && !resetBtn.dataset.bound){
+        resetBtn.addEventListener('click', ()=>{ const form=qs('#f'); form?.reset(); upd(); const st=qs('#st'); if(st) st.textContent='Chưa gửi'; });
+        resetBtn.dataset.bound='1';
+      }
+
+      function collect(){
+        const opt=(qsa('input[name=option]').find(x=>x.checked)||{}).value||'';
+        return {
+          scenario_id: qs('#scenarioId')?.value,
+          fullName: qs('#fullName')?.value.trim(),
+          email: qs('#email')?.value.trim(),
+          dept: qs('#dept')?.value,
+          option: opt,
+          analysis: analysis?.value.trim(),
+          client_id: (localStorage.getItem('apsp-client-id')|| (window.crypto?.randomUUID?.()||String(Date.now()))),
+          app_token: tkInput?.value||'',
+          user_agent: navigator.userAgent,
+          page: location.href
+        };
+      }
+
+      const form = qs('#f');
+      if (form && !form.dataset.bound){
+        form.addEventListener('submit', async (e)=>{
+          e.preventDefault();
+          const endpoint=(localStorage.getItem(KEYS.EP) || epInput?.value || '').trim();
+          if(!endpoint){ toast('Chưa cấu hình Web App URL ở nút ⚙︎ Cấu hình.'); return; }
+          const d=collect(); if(!d.fullName || !d.option || !d.analysis){ toast('Vui lòng nhập Họ & tên, chọn phương án và viết lý do.'); return; }
+          try{
+            const body=new URLSearchParams(); Object.entries(d).forEach(([k,v])=> body.append(k, v ?? ''));
+            await fetch(endpoint,{ method:'POST', mode:'no-cors', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body });
+            toast('Đã gửi! (trình duyệt có thể không đọc phản hồi do CORS, nhưng dữ liệu đã đi)');
+            const st=qs('#st'); if(st) st.textContent='Đã gửi';
+            localStorage.removeItem(SK); form.reset(); upd();
+          }catch(err){ console.error(err); toast('Gửi lỗi: '+err); const st=qs('#st'); if(st) st.textContent='Lỗi gửi'; }
+        });
+        form.dataset.bound='1';
+      }
+
+      // --- Mini tests (không thay đổi test cũ, bổ sung test cho LS_* không global & bind 1 lần) ---
+      (function runTests(){
+        const results=[];
+        results.push(typeof window.$$==='undefined' ? 'PASS: $$ not defined' : 'FAIL: $$ exists');
+        results.push(typeof window.LS_TK==='undefined' && typeof window.LS_EP==='undefined' ? 'PASS: no global LS_* vars' : 'FAIL: LS_* leaked to global');
+        results.push(typeof qsa==='function' ? 'PASS: qsa exists' : 'FAIL: qsa missing');
+        results.push(qsa('input[name=option]').length===3 ? 'PASS: 3 options' : 'WARN: options!=3');
+        results.push(document.querySelector('#toggleConfig')?.dataset.bound==='1' ? 'PASS: toggle bound once' : 'WARN: toggle not bound');
+        results.push(document.querySelector('#resetBtn')?.dataset.bound==='1' ? 'PASS: reset bound once' : 'WARN: reset not bound');
+        results.push(document.querySelector('#save')?.dataset.bound==='1' ? 'PASS: save bound once' : 'WARN: save not bound');
+        results.push(typeof (document.querySelector('#f')||{}).reset==='function' ? 'PASS: form.reset exists' : 'FAIL: form.reset missing');
+        results.push(document.querySelector('#resetBtn') ? 'PASS: resetBtn exists' : 'FAIL: resetBtn missing');
+        results.push(document.getElementById('choices') ? 'PASS: #choices anchor exists' : 'FAIL: #choices missing');
+        results.push(document.querySelector('.btn-lg[href="#choices"]') ? 'PASS: CTA points to #choices' : 'FAIL: CTA href wrong');
+        results.push(document.querySelector('.btn-ghost[href="#scenario"]') ? 'PASS: Ghost points to #scenario' : 'FAIL: Ghost href wrong');
+        results.push(document.querySelector('#brandLogo') ? 'PASS: brandLogo node' : 'FAIL: brandLogo missing');
+        results.push(document.querySelector('#brandFallback') ? 'PASS: brandFallback node' : 'FAIL: brandFallback missing');
+        console.log('[APSP Neo‑Gradient Tests]', results.join(' | '));
+      })();
+    })();
+  </script>
+</body>
+</html>
