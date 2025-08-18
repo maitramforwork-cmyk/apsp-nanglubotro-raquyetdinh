@@ -75,6 +75,11 @@
     .procon{margin:.35rem 0 0 18px; color:#394b59; font-size:13px}
     .procon li{margin:.2rem 0}
 
+    /* REFERENCE OPTIONS IN SCENARIO */
+    .ref-list{margin:8px 0 0 18px; padding:0}
+    .ref-list>li{margin:10px 0}
+    .ref-list .t{font-weight:700; color:#0f2b38}
+
     /* FORM */
     form{display:grid; gap:14px}
     .row{display:grid; gap:12px; grid-template-columns:1fr 1fr}
@@ -136,13 +141,38 @@
           </div>
         </div>
         <div class="card pad" id="scenario">
-          <div class="badge">Bối cảnh</div>
+          <div class="badge">Tình huống: BỐI CẢNH</div>
           <ul class="list" style="margin-top:6px">
-            <li>Công ty bạn chuyên sản xuất và phân phối dầu nhờn cho các đại lý và nhà máy.</li>
-            <li>Một khách hàng chiến lược vừa <b>đặt đơn hàng gấp 200.000 lít</b> dầu nhờn động cơ để phục vụ dây chuyền sản xuất.</li>
-            <li>Kho vận đã sử dụng lô hàng <b>tồn kho</b> mà không kiểm tra hạn sử dụng. Gần hạn giao hàng mới phát hiện toàn bộ lô chỉ còn <b>2 tháng</b>, trong khi hợp đồng yêu cầu tối thiểu <b>6 tháng</b>.</li>
-            <li><b>Yêu cầu quyết định:</b> Bạn là Giám đốc Nhà máy phải lựa chọn phương án xử lý ngay trong sáng hôm nay.</li>
+            <li>Công ty bạn chuyên sản xuất và phân phối dầu nhớt cho các đại lý và nhà máy.</li>
+            <li>Một khách hàng chiến lược vừa đặt đơn hàng gấp <b>200.000 lít</b> dầu nhớt động cơ để phục vụ dây chuyền sản xuất.</li>
+            <li>Kho vận đã sử dụng lô hàng tồn kho mà không kiểm tra hạn sử dụng. Gần hạn giao hàng mới phát hiện toàn bộ lô chỉ còn hạn <b>2 tháng</b>, trong khi hợp đồng yêu cầu tối thiểu <b>6 tháng</b>.</li>
+            <li>Bạn là Giám đốc Nhà máy phải lựa chọn phương án xử lý ngay trong sáng hôm nay để triển khai. Có <b>3 lựa chọn chính</b>.</li>
           </ul>
+          <ol class="ref-list">
+            <li>
+              <div class="t">Dừng đơn hàng và hoàn tiền cho khách</div>
+              <ul class="procon">
+                <li><b>Lợi:</b> Tránh giao hàng không đạt yêu cầu, bảo vệ uy tín.</li>
+                <li><b>Hại:</b> Mất doanh thu đơn hàng, nguy cơ mất khách lâu dài.</li>
+              </ul>
+            </li>
+            <li>
+              <div class="t">Chế lại lô sản phẩm cận date <span class="muted">(gia hạn date qua xử lý kỹ thuật, cải tiến bao bì, tem nhãn theo quy chuẩn pháp luật)</span></div>
+              <ul class="procon">
+                <li><b>Lợi:</b> Tiết kiệm nguyên liệu, rút ngắn thời gian so với sản xuất mới.</li>
+                <li><b>Hại:</b> Giao trễ, rủi ro về chất lượng hoặc pháp lý nếu khách kiểm tra kỹ.</li>
+              </ul>
+            </li>
+            <li>
+              <div class="t">Sản xuất lô mới đạt yêu cầu</div>
+              <ul class="procon">
+                <li><b>Lợi:</b> Đáp ứng đúng yêu cầu hợp đồng và tiêu chuẩn chất lượng.</li>
+                <li><b>Hại:</b> Giao trễ, phát sinh chi phí sản xuất bổ sung.</li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+          </div>
         </div>
       </div>
     </div>
@@ -151,35 +181,36 @@
   <!-- SCENARIO CHOICES + FORM -->
   <main class="wrap section">
     <h2 id="choices">Chọn phương án</h2>
+    <p class="muted" style="margin:6px 0 12px"><strong>Hãy chọn 01 PHẢN ỨNG mà bạn THƯỜNG/ SẼ THỰC HIỆN khi bạn đối mặt với vấn đề này hoặc tương tự.</strong></p>
     <div class="choices" aria-label="Phương án">
       <label class="choice">
-        <input type="radio" name="option" value="Dừng đơn & hoàn tiền">
+        <input type="radio" name="option" value="Tình huống này rắc rối quá… thôi mình cứ báo cáo lên Ban TGĐ, để họ chỉ đạo rồi mình làm theo. Nếu có rủi ro thì cũng không phải do mình. Chứ giờ chọn nhầm, mình không chịu nổi trách nhiệm đâu.">
         <div>
-          <div class="name">1) Dừng đơn hàng & hoàn tiền cho khách</div>
-          <ul class="procon">
-            <li><b>Lợi:</b> Tránh giao hàng không đạt yêu cầu, bảo vệ uy tín.</li>
-            <li><b>Hại:</b> Mất doanh thu đơn hàng, nguy cơ mất khách lâu dài.</li>
-          </ul>
+          <div class="name">Tình huống này rắc rối quá… thôi mình cứ báo cáo lên Ban TGĐ, để họ chỉ đạo rồi mình làm theo. Nếu có rủi ro thì cũng không phải do mình. Chứ giờ chọn nhầm, mình không chịu nổi trách nhiệm đâu.</div>
         </div>
       </label>
       <label class="choice">
-        <input type="radio" name="option" value="Chế lại lô cận date">
+        <input type="radio" name="option" value="Phải bàn với cả team đã… Nếu nhiều người đồng ý sản xuất mới thì mình sẽ theo. Chứ một mình quyết định thì lỡ sai ai gánh? Tốt nhất là đợi kho vận, QA, kinh doanh cùng chốt hướng, mình chỉ làm theo thôi.">
         <div>
-          <div class="name">2) Chế lại lô sản phẩm cận date</div>
-          <ul class="procon">
-            <li><b>Lợi:</b> Giảm chi phí/nguyên liệu, rút ngắn thời gian so với sản xuất mới.</li>
-            <li><b>Hại:</b> Giao trễ; rủi ro về chất lượng hoặc pháp lý nếu khách kiểm tra kỹ.</li>
-          </ul>
+          <div class="name">Phải bàn với cả team đã… Nếu nhiều người đồng ý sản xuất mới thì mình sẽ theo. Chứ một mình quyết định thì lỡ sai ai gánh? Tốt nhất là đợi kho vận, QA, kinh doanh cùng chốt hướng, mình chỉ làm theo thôi.</div>
         </div>
       </label>
       <label class="choice">
-        <input type="radio" name="option" value="Sản xuất lô mới">
+        <input type="radio" name="option" value="Mình thấy phương án an toàn nhất là sản xuất lô mới. Dù giao trễ và tốn chi phí, nhưng uy tín với khách quan trọng hơn. Nếu Ban TGĐ đồng ý chọn cách này thì mình sẽ chịu trách nhiệm triển khai toàn bộ sản xuất để kịp tiến độ nhất có thể.">
         <div>
-          <div class="name">3) Sản xuất lô mới đạt yêu cầu</div>
-          <ul class="procon">
-            <li><b>Lợi:</b> Đáp ứng đúng yêu cầu hợp đồng và tiêu chuẩn chất lượng.</li>
-            <li><b>Hại:</b> Giao trễ; phát sinh chi phí sản xuất bổ sung.</li>
-          </ul>
+          <div class="name">Mình thấy phương án an toàn nhất là sản xuất lô mới. Dù giao trễ và tốn chi phí, nhưng uy tín với khách quan trọng hơn. Nếu Ban TGĐ đồng ý chọn cách này thì mình sẽ chịu trách nhiệm triển khai toàn bộ sản xuất để kịp tiến độ nhất có thể.</div>
+        </div>
+      </label>
+      <label class="choice">
+        <input type="radio" name="option" value="Khách hàng này là chiến lược, mất họ sẽ ảnh hưởng dài hạn. Dù áp lực từ kinh doanh là phải giữ doanh thu, nhưng mình giữ quan điểm: không được chế biến hay giao lô cận date. Mình sẽ thuyết phục các bên đồng ý sản xuất mới, và cam kết dồn mọi nguồn lực để rút ngắn tối đa thời gian. Nếu trễ 2–3 ngày thì mình sẽ trực tiếp làm việc với khách để giải thích.">
+        <div>
+          <div class="name">Khách hàng này là chiến lược, mất họ sẽ ảnh hưởng dài hạn. Dù áp lực từ kinh doanh là phải giữ doanh thu, nhưng mình giữ quan điểm: không được chế biến hay giao lô cận date. Mình sẽ thuyết phục các bên đồng ý sản xuất mới, và cam kết dồn mọi nguồn lực để rút ngắn tối đa thời gian. Nếu trễ 2–3 ngày thì mình sẽ trực tiếp làm việc với khách để giải thích.</div>
+        </div>
+      </label>
+      <label class="choice">
+        <input type="radio" name="option" value="Không thể đánh đổi uy tín công ty chỉ để giữ một đơn hàng. Mình sẽ chọn sản xuất lô mới, kiên quyết không chế biến lô cận date vì rủi ro pháp lý và chất lượng là quá lớn. Dù kinh doanh có gây áp lực doanh thu, mình sẵn sàng tranh luận đến cùng để bảo vệ uy tín thương hiệu. Uy tín là tài sản lâu dài, không thể để mất chỉ vì ngắn hạn.">
+        <div>
+          <div class="name">Không thể đánh đổi uy tín công ty chỉ để giữ một đơn hàng. Mình sẽ chọn sản xuất lô mới, kiên quyết không chế biến lô cận date vì rủi ro pháp lý và chất lượng là quá lớn. Dù kinh doanh có gây áp lực doanh thu, mình sẵn sàng tranh luận đến cùng để bảo vệ uy tín thương hiệu. Uy tín là tài sản lâu dài, không thể để mất chỉ vì ngắn hạn.</div>
         </div>
       </label>
     </div>
@@ -193,8 +224,8 @@
           <div class="field"><label for="email">Email công việc</label><input id="email" type="email" placeholder="ten@congty.com"></div>
         </div>
         <div class="row">
-          <div class="field"><label for="dept">Bộ phận</label>
-            <select id="dept"><option value="">Chọn bộ phận</option>
+          <div class="field"><label for="dept">Bộ phận <span style="color:#e11d48">*</span></label>
+            <select id="dept" required><option value="">Chọn bộ phận</option>
               <option>BỘ PHẬN CUNG ỨNG</option>
               <option>PHÒNG KẾ TOÁN</option>
               <option>PHÒNG R &amp; D, QC</option>
@@ -210,17 +241,13 @@
               <option>BỘ PHẬN AN TOÀN &amp; MÔI TRƯỜNG</option>
               <option>PHÒNG MARKETING</option>
               <option>BỘ PHẬN HÀNG HẢI</option>
-              <option>TỔNG GIÁM ĐỐC</option>
+              <option>TỔNG GIÁO ĐỐC</option>
               <option>GIÁM ĐỐC NHÀ MÁY</option>
             </select>
           </div>
           <div class="field"><label for="scenarioId">Mã tình huống</label><input id="scenarioId" value="XL-GIAO-HANG-KHACH-LON-v1" readonly></div>
         </div>
-        <div class="field">
-          <label for="analysis">Lý do & cách triển khai (100–250 từ) <span style="color:#e11d48">*</span></label>
-          <textarea id="analysis" required placeholder="Trình bày lập luận của bạn…"></textarea>
-          <div class="meter"><small class="muted">Mục tiêu 100–250 từ</small><div class="bar"><b id="pb"></b></div><small class="muted"><span id="wc">0</span> từ</small></div>
-        </div>
+        
         <div class="actions">
           <button type="button" class="btn-ghost" id="save">Lưu nháp</button>
           <button class="btn-lg" id="submitBtn">Gửi câu trả lời</button>
@@ -307,11 +334,8 @@
       logoImg.dataset.bound='1';
     }
 
-    // Word-count meter
-    const analysis=qs('#analysis'), wc=qs('#wc'), pb=qs('#pb');
-    const upd=()=>{ const n=(analysis?.value.trim().match(/\b\w+\b/gu)||[]).length; if(wc) wc.textContent=n; if(pb) pb.style.width=Math.max(6,Math.min(100,Math.round((n/250)*100)))+'%'; };
-    if (analysis && !analysis.dataset.bound) { analysis.addEventListener('input', upd); analysis.dataset.bound='1'; }
-    upd();
+    // (Essay removed) keep a no-op for calls
+    const upd=()=>{}; 
 
     // Lưu nháp
     const SK='apsp-scenario-XL-GIAO-HANG-v1';
@@ -325,7 +349,7 @@
       const em=qs('#email'); if(em) em.value=d.email||'';
       const dp=qs('#dept'); if(dp) dp.value=d.dept||'';
       const r=qsa('input[name=option]').find(x=>x.value===d.option); if(r) r.checked=true;
-      if(analysis){ analysis.value=d.analysis||''; upd(); } }catch(e){} })();
+      upd(); }catch(e){} })();
 
     // Reset form
     const resetBtn = qs('#resetBtn');
@@ -343,7 +367,7 @@
         email: qs('#email')?.value.trim(),
         dept: qs('#dept')?.value,
         option: opt,
-        analysis: analysis?.value.trim(),
+        analysis: '',
         client_id: (localStorage.getItem('apsp-client-id')|| (window.crypto?.randomUUID?.()||String(Date.now()))),
         app_token: (isAdmin ? (tkInput?.value||'') : ''), // token chỉ dùng khi admin cấu hình
         user_agent: navigator.userAgent,
@@ -365,8 +389,8 @@
         if(!endpoint){ toast('Thiếu endpoint. (Liên hệ quản trị)'); return; }
 
         const d=collect();
-        if(!d.fullName || !d.option || !d.analysis){
-          toast('Vui lòng nhập Họ & tên, chọn phương án và viết lý do.'); return;
+        if(!d.fullName || !d.dept || !d.option){
+          toast('Vui lòng nhập Họ & tên, chọn Bộ phận và chọn phương án.'); return;
         }
 
         try{
@@ -391,7 +415,8 @@
     (function runTests(){
       const results=[];
       results.push(document.querySelector('#toggleConfig') ? 'ADMIN: config visible' : 'STUDENT: config hidden');
-      results.push(qsa('input[name=option]').length===3 ? 'PASS: 3 options' : 'WARN: options!=3');
+      results.push(qsa('input[name=option]').length===5 ? 'PASS: 5 options' : 'WARN: options!=5');
+      results.push(document.querySelector('#dept')?.hasAttribute('required') ? 'PASS: dept required' : 'FAIL: dept not required');
       console.log('[APSP Live Tests]', results.join(' | '));
     })();
   })();
