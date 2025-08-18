@@ -76,3 +76,219 @@
         <div class="h1">Trung tâm Học tập APSP</div>
         <h2>Ứng dụng tình huống: Năng lực Bổ trợ – Ra quyết định</h2>
         <p class="lead">Làm lần lượt 5 tình huống, sau đó xác nhận nộp bài. Dữ liệu sẽ đồng bộ về trung tâm đào tạo.</p>
+        <div class="actions"><button type="button" class="btn-lg" id="goInfoBtn">Bắt đầu</button></div>
+      </div>
+
+      <!-- Tab 2: Thông tin người học -->
+      <div class="tpanel" id="info" role="tabpanel">
+        <h2>Thông tin người học</h2>
+        <form id="infoForm">
+          <div class="row">
+            <div class="field"><label for="fullName">Họ và tên <span style="color:#e11d48">*</span></label><input id="fullName" required placeholder="VD: Nguyễn Văn A"></div>
+            <div class="field"><label for="email">Email công việc</label><input id="email" type="email" placeholder="ten@congty.com"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label for="dept">Bộ phận <span style="color:#e11d48">*</span></label>
+              <select id="dept" required><option value="">Chọn bộ phận</option>
+                <option>BỘ PHẬN CUNG ỨNG</option>
+                <option>PHÒNG KẾ TOÁN</option>
+                <option>PHÒNG R &amp; D, QC</option>
+                <option>PHÒNG NHÂN SỰ</option>
+                <option>BỘ PHẬN KỸ THUẬT BẢO TRÌ</option>
+                <option>BỘ PHẬN CÔNG NGHỆ SẢN XUẤT</option>
+                <option>CHI NHÁNH MIỀN BẮC</option>
+                <option>BỘ PHẬN KHO VẬN</option>
+                <option>PHÒNG DỊCH VỤ CHĂM SÓC KHÁCH HÀNG</option>
+                <option>BỘ PHẬN PTTT</option>
+                <option>PHÒNG XUẤT KHẨU</option>
+                <option>PHÒNG QUẢN LÝ KÊNH PHÂN PHỐI (GT)</option>
+                <option>BỘ PHẬN AN TOÀN &amp; MÔI TRƯỜNG</option>
+                <option>PHÒNG MARKETING</option>
+                <option>BỘ PHẬN HÀNG HẢI</option>
+                <option>TỔNG GIÁM ĐỐC</option>
+                <option>GIÁM ĐỐC NHÀ MÁY</option>
+              </select>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="button" class="btn-lg" id="toT1Btn">Vào tình huống</button>
+            <span class="muted">(Bạn chỉ cần nhập 1 lần cho tất cả tình huống)</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Khu vực các panel tình huống + panel Nộp bài sẽ được sinh tự động -->
+      <div id="scenario-panels"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+  (function(){
+    'use strict';
+    // ===== Helpers =====
+    const qs=(q,root=document)=>root.querySelector(q);
+    const qsa=(q,root=document)=>Array.from(root.querySelectorAll(q));
+    const toast=(m)=>{const t=qs('#toast'); if(!t) return; t.textContent=m; t.style.display='block'; setTimeout(()=>t.style.display='none', 3200)};
+
+    // ===== Endpoint (hardcoded) =====
+    const DEFAULT_EP = 'https://script.google.com/macros/s/AKfycbyrbmIw0eEVyU07H2FwhQJbVkhkG0dbu0a4leRGdgV5BInchIAn7ZsyG1R6KYaA1BLiJA/exec';
+
+    // ===== Data Model =====
+    const SCENARIOS=[
+      {id:'QD-T1', title:'Tình huống 1 – Sản xuất', text:'Bạn là Giám đốc Nhà máy. Một khách hàng chiến lược vừa đặt gấp 200.000 lít dầu nhớt động cơ để phục vụ dây chuyền sản xuất, thời hạn giao chỉ còn 5 ngày. Khi kiểm tra, bạn phát hiện lô hàng tồn kho chỉ còn hạn sử dụng 3 tháng, trong khi hợp đồng quy định tối thiểu 6 tháng. Nếu giao sẽ vi phạm hợp đồng, nhưng nếu sản xuất mới sẽ chậm tiến độ. Bạn sẽ nghĩ gì và làm gì trong tình huống này?', answers:[
+        'Khách đang cần gấp, mình cứ giao lô này đi, cùng lắm xin lỗi sau. Nếu chậm thì mất cả hợp đồng còn nguy hơn.',
+        'Thôi chờ sếp chỉ đạo, mình không quyết một mình để lỡ có chuyện thì cũng không phải chịu trách nhiệm.',
+        'Mình báo cáo tình hình, dừng xuất kho, chờ cấp trên quyết định, như vậy đúng quy trình.',
+        'Tôi cần phân tích nhanh rủi ro pháp lý, khả năng sản xuất bổ sung, rồi mời họp khẩn với Kho vận và Kinh doanh để thống nhất phương án.',
+        'Không chỉ xử lý tình huống này, tôi cần thương lượng với khách, tính toán sản xuất song song, đồng thời yêu cầu cải tiến quy trình kiểm soát hạn kho để ngăn ngừa lặp lại.'
+      ]},
+      {id:'QD-T2', title:'Tình huống 2 – Kế toán', text:'Phòng A gửi đề nghị thanh toán giai đoạn 1 cho nhà cung cấp, nhưng hồ sơ nghiệm thu thiếu chữ ký và một số thông tin kỹ thuật. Nếu thanh toán sẽ sai quy trình, nhưng nếu giữ lại, nhà cung cấp dọa ngưng triển khai dự án. Bạn là Kế toán thanh toán, phải ra quyết định ngay. Bạn sẽ nghĩ gì và làm gì?', answers:[
+        'Thôi cứ thanh toán đi, chậm trễ thì nhà cung cấp dừng dự án, phiền hơn nhiều.',
+        'Mình chỉ làm khi có chỉ đạo bằng văn bản từ lãnh đạo, còn không thì cứ giữ hồ sơ lại, chẳng dám quyết.',
+        'Báo cáo cấp trên, tiếp tục giữ hồ sơ cho đến khi đủ giấy tờ, mình không tự ý.',
+        'Mình liên hệ ngay Phòng A, phối hợp hoàn thiện hồ sơ và giải thích rõ cho họ để nhanh chóng bổ sung chứng từ.',
+        'Ngoài phối hợp bổ sung hồ sơ, tôi còn chủ động hướng dẫn Phòng A cách chuẩn bị đúng từ đầu và trao đổi với nhà cung cấp để họ hiểu quy trình, tránh lặp lại.'
+      ]},
+      {id:'QD-T3', title:'Tình huống 3 – Kinh doanh', text:'Trong cuộc họp với khách hàng tiềm năng, họ hỏi dồn dập về sự khác biệt sản phẩm của công ty so với đối thủ. Xung quanh còn nhiều người theo dõi, bạn cảm thấy áp lực vì chưa chuẩn bị tài liệu chi tiết. Bạn sẽ nghĩ gì và phản ứng thế nào?', answers:[
+        'Mình cứ nói lướt cho xong, khen sản phẩm mình tốt, đừng để mất mặt trước khách và đám đông.',
+        'Khó quá, chắc đợi quản lý hoặc đồng nghiệp lên tiếng hộ, mình không nên mạo hiểm.',
+        'Mình trả lời ngắn gọn những điểm cơ bản nhất để giữ thể diện và không sai lệch quá.',
+        'Mình chia sẻ khác biệt nổi bật nhất, đề nghị gửi thêm bảng so sánh và video kỹ thuật sau buổi họp để khách có đầy đủ thông tin.',
+        'Ngoài giải thích tại chỗ, tôi chủ động xin liên hệ lại để trình bày bằng dữ liệu thử nghiệm, đồng thời đề xuất với team chuẩn bị sẵn bộ so sánh chuẩn cho các lần sau.'
+      ]},
+      {id:'QD-T4', title:'Tình huống 4 – Nhân sự', text:'Một quản lý bộ phận gửi email yêu cầu bạn cung cấp toàn bộ hồ sơ cá nhân, hợp đồng và bảng lương của nhân viên để “xem xét nội bộ”. Tuy nhiên, bạn không chắc yêu cầu này đã được Ban Giám đốc phê duyệt. Bạn là chuyên viên Nhân sự, bạn sẽ nghĩ gì và hành động ra sao?', answers:[
+        'Gửi ngay cho rồi, quản lý yêu cầu thì chắc không sao, từ chối lại phiền phức.',
+        'Đợi quản lý thúc thêm hoặc có ai khác nhắc thì mình mới gửi, khỏi tự quyết.',
+        'Hỏi lại quản lý mục đích, nếu thấy hợp lý thì gửi, còn gì phức tạp thì báo sếp.',
+        'Mình sẽ xác minh thẩm quyền và báo cáo lại quản lý trực tiếp trước khi chia sẻ, để tránh sai phạm.',
+        'Tôi xác minh với Ban Giám đốc/Phòng Nhân sự, nếu chưa đủ điều kiện thì từ chối, đồng thời đề xuất hoàn thiện quy trình kiểm soát dữ liệu để tránh tình trạng này.'
+      ]},
+      {id:'QD-T5', title:'Tình huống 5 – Dịch vụ CSKH', text:'Bạn trực tổng đài CSKH. Một khách hàng lớn gọi điện phàn nàn gay gắt vì đơn hàng giao chậm, dọa sẽ hủy hợp đồng nếu không có câu trả lời thỏa đáng ngay lập tức. Bạn chưa có thông tin đầy đủ từ bộ phận Giao hàng. Trong lúc đó, nhiều cuộc gọi khác vẫn đang chờ. Bạn sẽ nghĩ gì và phản ứng ra sao?', answers:[
+        'Thôi thì nhận lỗi chung chung cho xong, đừng làm khách tức thêm, còn chi tiết tính sau.',
+        'Mình đẩy vấn đề sang trưởng ca hoặc bộ phận giao hàng, chờ họ trả lời rồi mới quay lại với khách.',
+        'Ghi nhận yêu cầu, hứa sẽ phản hồi khi có thông tin chính thức, để an toàn cho bản thân.',
+        'Xin lỗi khách, giải thích đang kiểm tra và sẽ liên hệ lại trong thời gian sớm nhất, đồng thời nhắn ngay cho bộ phận giao hàng để nắm tình hình.',
+        'Vừa trấn an khách bằng thông tin bước đầu, vừa kích hoạt nhóm xử lý nhanh với Giao hàng & Kinh doanh để chốt phương án, đồng thời đề xuất cơ chế báo cáo sự cố tức thì để phục vụ khách hàng tốt hơn.'
+      ]}
+    ];
+
+    // ===== State (draft) =====
+    const INFO_SK='apsp-user-info';
+    const ANSW_SK='apsp-answers';
+    const answersState=(function(){ try{ const s=localStorage.getItem(ANSW_SK); return s? JSON.parse(s): {}; }catch(_){ return {}; } })();
+    function persist(){ try{ localStorage.setItem(ANSW_SK, JSON.stringify(answersState)); }catch(_){} }
+
+    // ===== Tabs utility =====
+    const tabbar=qs('#tabbar');
+    const panelsWrap=qs('#scenario-panels');
+    function mkEl(tag, cls){ const el=document.createElement(tag); if(cls) el.className=cls; return el; }
+    function activateTab(key){ qsa('.tbtn').forEach(b=>{ const on=b.dataset.tab===key; b.classList.toggle('active',on); b.setAttribute('aria-selected', on?'true':'false'); }); qsa('.tpanel').forEach(p=> p.classList.toggle('active', p.id===key)); }
+
+    // ===== Build scenario tabs & panels (Tab 3..7) =====
+    SCENARIOS.forEach((s,i)=>{
+      const key='t'+(i+1);
+      const btn=mkEl('button','tbtn'); btn.dataset.tab=key; btn.textContent='Tình huống '+(i+1); btn.setAttribute('role','tab'); tabbar.appendChild(btn);
+      const panel=mkEl('div','tpanel'); panel.id=key; panel.setAttribute('role','tabpanel');
+      panel.innerHTML=`<h2>${s.title}</h2>
+        <p class="lead">${s.text}</p>
+        <p class="muted" style="margin:6px 0 12px"><strong>Hãy chọn 01 PHẢN ỨNG mà bạn THƯỜNG/ SẼ THỰC HIỆN khi đối mặt với tình huống này.</strong></p>
+        <div class="choices" id="choices_${i}" aria-label="Phương án"></div>
+        <div class="actions" style="margin-top:12px">
+          <button type="button" class="btn-ghost" data-prev="${i}">Quay lại</button>
+          <button type="button" class="btn-ghost" data-save="${i}">Lưu nháp</button>
+          <button type="button" class="btn-lg" data-next="${i}">Tiếp theo</button>
+          <span class="tag" id="status_${i}">${answersState[i]? 'Đã chọn':'Chưa chọn'}</span>
+        </div>`;
+      panelsWrap.appendChild(panel);
+      const box=qs('#choices_'+i);
+      s.answers.forEach((ans,k)=>{
+        const lab=mkEl('label','choice');
+        const input=mkEl('input'); input.type='radio'; input.name='opt_'+i; input.value=ans; input.id='opt_'+i+'_'+k; if(answersState[i]===ans) input.checked=true;
+        const wrap=mkEl('div'); const name=mkEl('div','name'); name.textContent=ans; wrap.appendChild(name);
+        lab.appendChild(input); lab.appendChild(wrap); box.appendChild(lab);
+      });
+    });
+
+    // ===== Build final tab (Tab 8) =====
+    const finalBtn=mkEl('button','tbtn'); finalBtn.dataset.tab='final'; finalBtn.textContent='Nộp bài'; finalBtn.setAttribute('role','tab'); tabbar.appendChild(finalBtn);
+    const finalPanel=mkEl('div','tpanel'); finalPanel.id='final'; finalPanel.setAttribute('role','tabpanel');
+    finalPanel.innerHTML=`<h2>Xác nhận nộp bài</h2>
+      <p class="muted">Vui lòng kiểm tra lại trước khi nộp.</p>
+      <div id="summary"></div>
+      <div class="actions" style="margin-top:12px">
+        <button type="button" class="btn-ghost" id="backToT5">Quay lại tình huống 5</button>
+        <button type="button" class="btn-lg" id="finalSubmitBtn">Xác nhận nộp bài</button>
+      </div>`;
+    panelsWrap.appendChild(finalPanel);
+
+    function renderSummary(){
+      const info=userInfo(); const box=qs('#summary'); if(!box) return;
+      const head=`<div class="card pad" style="margin:8px 0 12px"><div><b>Họ & tên:</b> ${info.fullName||'-'} &nbsp;•&nbsp; <b>Bộ phận:</b> ${info.dept||'-'} &nbsp;•&nbsp; <b>Email:</b> ${info.email||'-'}</div></div>`;
+      const list=SCENARIOS.map((s,i)=>`<div class="card pad" style="margin:10px 0"><div style="font-weight:800">${i+1}. ${s.title}</div><div class="muted" style="margin:4px 0 8px">${s.text}</div><div>${answersState[i]? '<b>Phương án:</b> '+answersState[i] : '<span class=\"muted\">(Chưa chọn)</span>'}</div></div>`).join('');
+      box.innerHTML=head+list;
+    }
+
+    // ===== Utilities =====
+    function userInfo(){
+      return {
+        fullName: qs('#fullName')?.value.trim(),
+        email: qs('#email')?.value.trim(),
+        dept: qs('#dept')?.value,
+        client_id: (localStorage.getItem('apsp-client-id')|| (window.crypto?.randomUUID?.()||String(Date.now())))
+      };
+    }
+    function getSelected(i){ const r=qsa('input[name=opt_'+i+']').find(x=>x.checked); return r? r.value : ''; }
+
+    // ===== Events =====
+    // Chuyển tab bằng click vào tabbar
+    tabbar.addEventListener('click',(e)=>{ const t=e.target; if(!(t instanceof HTMLElement)) return; const key=t.dataset.tab; if(key){ if(key==='final') renderSummary(); activateTab(key); }});
+
+    // Điều hướng trong panel (prev/save/next)
+    panelsWrap.addEventListener('click',(e)=>{
+      const t=e.target; if(!(t instanceof HTMLElement)) return; const ds=t.dataset; if(!ds) return;
+      if(ds.prev!==undefined){ const i=Number(ds.prev); activateTab(i===0? 'info' : 't'+(i)); return; }
+      if(ds.save!==undefined){ const i=Number(ds.save); const v=getSelected(i); if(!v){ toast('Chưa chọn phương án.'); return; } answersState[i]=v; persist(); qs('#status_'+i).textContent='Đã lưu'; toast('Đã lưu nháp tình huống '+(i+1)); return; }
+      if(ds.next!==undefined){ const i=Number(ds.next); const v=getSelected(i); if(!v){ toast('Vui lòng chọn một phương án.'); return; } answersState[i]=v; persist(); qs('#status_'+i).textContent='Đã chọn'; activateTab(i<SCENARIOS.length-1? 't'+(i+2) : 'final'); return; }
+    });
+
+    // Auto lưu nháp khi chọn
+    panelsWrap.addEventListener('change',(e)=>{ const el=e.target; if(!(el instanceof HTMLInputElement)) return; const name=el.name||''; if(!name.startsWith('opt_')) return; const i=Number(name.split('_')[1]||'0'); if(!isNaN(i)){ answersState[i]=el.value; persist(); }});
+
+    // Nút bắt đầu & sang tình huống 1
+    const goInfoBtn=qs('#goInfoBtn'); if(goInfoBtn) goInfoBtn.addEventListener('click',()=> activateTab('info'));
+    const toT1Btn=qs('#toT1Btn'); if(toT1Btn) toT1Btn.addEventListener('click',()=>{ const info=userInfo(); if(!info.fullName || !info.dept){ toast('Vui lòng nhập Họ & tên và chọn Bộ phận.'); return; } localStorage.setItem(INFO_SK, JSON.stringify(info)); activateTab('t1'); });
+
+    // Tab nộp bài: quay lại & gửi tất cả
+    document.addEventListener('click', async (e)=>{
+      const t=e.target; if(!(t instanceof HTMLElement)) return;
+      if(t.id==='backToT5'){ activateTab('t5'); }
+      if(t.id==='finalSubmitBtn'){
+        const info=userInfo(); if(!info.fullName || !info.dept){ toast('Vui lòng nhập Họ & tên và chọn Bộ phận.'); activateTab('info'); return; }
+        // kiểm tra đủ 5 tình huống
+        for(let i=0;i<SCENARIOS.length;i++){ if(!answersState[i]){ toast('Vui lòng chọn phương án cho Tình huống '+(i+1)+'.'); activateTab('t'+(i+1)); return; } }
+        // gửi batch
+        const rows = SCENARIOS.map((s,i)=>({ scenario_id:s.id, fullName: info.fullName, email: info.email||'', dept: info.dept, option: answersState[i], analysis:'', client_id: info.client_id, app_token:'', user_agent:navigator.userAgent, page: location.href }));
+        try{
+          const body=new URLSearchParams(); body.append('mode','batch'); body.append('bulk', JSON.stringify(rows));
+          await fetch(DEFAULT_EP,{ method:'POST', mode:'no-cors', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body });
+          toast('Đã nộp bài thành công!');
+        }catch(err){ console.error(err); toast('Gửi lỗi: '+err); }
+      }
+    });
+
+    // ===== Init =====
+    // Mặc định hiển thị Tab 1 (Trang chủ)
+
+    // ===== Self-check =====
+    (function runTests(){
+      const results=[]; const totalTabs=document.querySelectorAll('.tbtn').length;
+      results.push(totalTabs===8 ? 'PASS: 8 tabs' : 'WARN: tabs='+totalTabs);
+      results.push(Array.isArray(SCENARIOS) && SCENARIOS.length===5 ? 'PASS: 5 scenarios' : 'FAIL: scenarios');
+      console.log('[APSP Live Tests]', results.join(' | '));
+    })();
+  })();
+  </script>
+</body>
+</html>
